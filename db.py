@@ -51,10 +51,18 @@ def insert_event(title, description, date, location, user_id):
     conn = sqlite3.connect('events.db')
     c = conn.cursor()
 
-    # Добавляем новое мероприятие с указанием user_id
-    c.execute("INSERT INTO events (title, description, date, location, user_id) VALUES (?, ?, ?, ?, ?)",
-              (title, description, date, location, user_id))
-    conn.commit()
+    # Проверяем, нет ли мероприятия с таким же временем для данного пользователя
+    c.execute("SELECT * FROM events WHERE date = ? AND user_id = ?", (date, user_id))
+    existing_event = c.fetchone()
+
+    if existing_event:
+        print(f"Ошибка: Мероприятие с таким временем уже существует для пользователя с id {user_id}.")
+    else:
+        # Добавляем новое мероприятие с указанием user_id
+        c.execute("INSERT INTO events (title, description, date, location, user_id) VALUES (?, ?, ?, ?, ?)",
+                  (title, description, date, location, user_id))
+        conn.commit()
+
     conn.close()
 
 
