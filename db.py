@@ -47,25 +47,6 @@ def insert_user(name, email):
     conn.close()
 
 
-def insert_event(title, description, date, location, user_id):
-    conn = sqlite3.connect('events.db')
-    c = conn.cursor()
-
-    # Проверяем, нет ли мероприятия с таким же временем для данного пользователя
-    c.execute("SELECT * FROM events WHERE date = ? AND user_id = ?", (date, user_id))
-    existing_event = c.fetchone()
-
-    if existing_event:
-        print(f"Ошибка: Мероприятие с таким временем уже существует для пользователя с id {user_id}.")
-    else:
-        # Добавляем новое мероприятие с указанием user_id
-        c.execute("INSERT INTO events (title, description, date, location, user_id) VALUES (?, ?, ?, ?, ?)",
-                  (title, description, date, location, user_id))
-        conn.commit()
-
-    conn.close()
-
-
 # Загрузка мероприятий
 def load_events():
     conn = sqlite3.connect('events.db')
@@ -89,3 +70,27 @@ def get_user_id(email):
 
     conn.close()
     return user_id[0] if user_id else None
+
+
+# Функция для добавления мероприятия
+def insert_event(title, description, date, location, time_block, user_id, role, group=None, contact=None):
+    conn = sqlite3.connect('events.db')
+    c = conn.cursor()
+
+    # Проверка, чтобы время мероприятия не пересекалось для одного пользователя
+    c.execute('''SELECT * FROM events WHERE date = ? AND time_block = ? AND user_id = ?''',
+              (date, time_block, user_id))
+    existing_event = c.fetchone()
+    if existing_event:
+        print("Ошибка: В это время уже есть мероприятие.")
+        conn.close()
+        return
+
+    # Вставка нового мероприятия в базу данных
+    c.execute('''INSERT INTO events (title, description, date, location, time_block, user_id, role, group, contact) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+              (title, description, date, location, time_block, user_id, role, group, contact))
+
+    conn.commit()
+    conn.close()
+    print(f'Мероприятие "{title}" успешно добавлено.')

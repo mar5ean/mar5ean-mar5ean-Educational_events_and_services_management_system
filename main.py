@@ -103,6 +103,7 @@ class EventApp(App):
         self.sm.add_widget(EventDetailsScreen(name='event_details'))
         return self.sm
 
+
 if __name__ == '__main__':
     db.create_db()  # Создание базы данных
     EventApp().run()
