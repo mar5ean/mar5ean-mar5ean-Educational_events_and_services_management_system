@@ -54,5 +54,5 @@ Possible Improvements
 2.	Event Filters: Add filters for event sorting (e.g., by date, participant type).
 3.	Edit/Delete Events: Allow users to edit or delete their own events.
 ________________________________________
-This is not even the semi-final version of the project!
+This is not the final version of the project!
 
